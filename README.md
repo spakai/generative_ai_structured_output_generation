@@ -74,3 +74,136 @@ pytest
 - When you call `/generate`, the retriever selects the most relevant examples and injects them into the LLM prompt alongside your user brief. The prompt also includes the YAML schema summary so the model stays on structure.
 - The LLM drafts YAML by analogizing from those grounded examples. Validation ensures the output matches the schema and business rules; failures trigger an automatic repair prompt with error feedback.
 - Because we ground the model every time, the generated plans stay aligned with the corpus style—sensible tiers, realistic prices, compliant device limits—without needing to fine-tune the model itself.
+
+## Example Prompts and Responses
+
+### 1. US Holiday Season Plans
+
+**Request**
+```bash
+curl -X POST http://localhost:8000/generate \
+  -H "Content-Type: application/json" \
+  -d '{"prompt": "Launch plans for the US holiday season"}'
+```
+
+**Response**
+```json
+{
+  "yaml": "```yaml\nmetadata:\n  proposal_rationale: \"Introducing new streaming subscription plans tailored for the US holiday season to attract a wider audience and accommodate varying viewing preferences.\"\n\nplans:\n  - id: \"us-holiday-standard\"\n    name: \"US Holiday Standard Plan\"\n    region: \"United States\"\n    tier: \"Standard\"\n    price:\n      monthly: 14.99\n      currency: \"USD\"\n    device_limit: 2\n    video_quality: \"HD\"\n    add_ons:\n      - name: \"Extra Profile Pack\"\n        price_delta: 2.00\n      - name: \"Premium Sports\"\n        price_delta: 5.00\n\n  - id: \"us-holiday-basic\"\n    name: \"US Holiday Basic Plan\"\n    region: \"United States\"\n    tier: \"Basic\"\n    price:\n      monthly: 9.99\n      currency: \"USD\"\n    device_limit: 1\n    video_quality: \"SD\"\n    add_ons:\n      - name: \"Offline Downloads\"\n        price_delta: 1.00\n\n  - id: \"us-holiday-mobile\"\n    name: \"US Holiday Mobile Plan\"\n    region: \"United States\"\n    tier: \"Mobile\"\n    price:\n      monthly: 5.99\n      currency: \"USD\"\n    device_limit: 1\n    video_quality: \"SD\"\n    add_ons:\n      - name: \"Extra Mobile Data\"\n        price_delta: 2.00\n```",
+  "warnings": [],
+  "document": {
+    "version": "1.0",
+    "plans": [
+      {
+        "id": "us-holiday-standard",
+        "name": "US Holiday Standard Plan",
+        "region": "United States",
+        "tier": "Standard",
+        "price": {"monthly": 14.99, "currency": "USD"},
+        "device_limit": 2,
+        "video_quality": "HD",
+        "add_ons": [
+          {"name": "Extra Profile Pack", "price_delta": 2.0, "description": null},
+          {"name": "Premium Sports", "price_delta": 5.0, "description": null}
+        ],
+        "description": null
+      },
+      {
+        "id": "us-holiday-basic",
+        "name": "US Holiday Basic Plan",
+        "region": "United States",
+        "tier": "Basic",
+        "price": {"monthly": 9.99, "currency": "USD"},
+        "device_limit": 1,
+        "video_quality": "SD",
+        "add_ons": [
+          {"name": "Offline Downloads", "price_delta": 1.0, "description": null}
+        ],
+        "description": null
+      },
+      {
+        "id": "us-holiday-mobile",
+        "name": "US Holiday Mobile Plan",
+        "region": "United States",
+        "tier": "Mobile",
+        "price": {"monthly": 5.99, "currency": "USD"},
+        "device_limit": 1,
+        "video_quality": "SD",
+        "add_ons": [
+          {"name": "Extra Mobile Data", "price_delta": 2.0, "description": null}
+        ],
+        "description": null
+      }
+    ],
+    "metadata": {
+      "proposal_rationale": "Introducing new streaming subscription plans tailored for the US holiday season to attract a wider audience and accommodate varying viewing preferences."
+    }
+  }
+}
+```
+
+### 2. APAC Summer Travel Bundles
+
+**Request**
+```bash
+curl -X POST http://localhost:8000/generate \
+  -H "Content-Type: application/json" \
+  -d '{"prompt": "Design bundled streaming plans for the APAC summer travel season with cross-device perks"}'
+```
+
+**Response**
+```json
+{
+  "yaml": "```yaml\nmetadata:\n  proposal_rationale: \"Designed for the APAC summer travel season, these bundled streaming plans offer cross-device perks to enhance user experience while traveling.\"\n\nplans:\n  - id: \"apac_summer_mobile\"\n    name: \"APAC Summer Mobile Plan\"\n    region: \"Asia Pacific\"\n    tier: \"Mobile\"\n    price:\n      monthly: 5.99\n      currency: \"USD\"\n    device_limit: 1\n    video_quality: \"SD\"\n    add_ons:\n      - name: \"Extra Mobile Data\"\n        price_delta: 2.00\n\n  - id: \"apac_summer_family\"\n    name: \"APAC Summer Family Plan\"\n    region: \"Asia Pacific\"\n    tier: \"Family\"\n    price:\n      monthly: 12.99\n      currency: \"USD\"\n    device_limit: 4\n    video_quality: \"HD\"\n    add_ons:\n      - name: \"Kids Pack\"\n        price_delta: 3.00\n      - name: \"Premier Sports\"\n        price_delta: 5.00\n\n  - id: \"apac_summer_standard\"\n    name: \"APAC Summer Standard Plan\"\n    region: \"Asia Pacific\"\n    tier: \"Standard\"\n    price:\n      monthly: 14.99\n      currency: \"USD\"\n    device_limit: 2\n    video_quality: \"HD\"\n    add_ons:\n      - name: \"Extra Profile Pack\"\n        price_delta: 2.50\n      - name: \"Premium Sports\"\n        price_delta: 4.00\n```",
+  "warnings": [],
+  "document": {
+    "version": "1.0",
+    "plans": [
+      {
+        "id": "apac_summer_mobile",
+        "name": "APAC Summer Mobile Plan",
+        "region": "Asia Pacific",
+        "tier": "Mobile",
+        "price": {"monthly": 5.99, "currency": "USD"},
+        "device_limit": 1,
+        "video_quality": "SD",
+        "add_ons": [
+          {"name": "Extra Mobile Data", "price_delta": 2.0, "description": null}
+        ],
+        "description": null
+      },
+      {
+        "id": "apac_summer_family",
+        "name": "APAC Summer Family Plan",
+        "region": "Asia Pacific",
+        "tier": "Family",
+        "price": {"monthly": 12.99, "currency": "USD"},
+        "device_limit": 4,
+        "video_quality": "HD",
+        "add_ons": [
+          {"name": "Kids Pack", "price_delta": 3.0, "description": null},
+          {"name": "Premier Sports", "price_delta": 5.0, "description": null}
+        ],
+        "description": null
+      },
+      {
+        "id": "apac_summer_standard",
+        "name": "APAC Summer Standard Plan",
+        "region": "Asia Pacific",
+        "tier": "Standard",
+        "price": {"monthly": 14.99, "currency": "USD"},
+        "device_limit": 2,
+        "video_quality": "HD",
+        "add_ons": [
+          {"name": "Extra Profile Pack", "price_delta": 2.5, "description": null},
+          {"name": "Premium Sports", "price_delta": 4.0, "description": null}
+        ],
+        "description": null
+      }
+    ],
+    "metadata": {
+      "proposal_rationale": "Designed for the APAC summer travel season, these bundled streaming plans offer cross-device perks to enhance user experience while traveling."
+    }
+  }
+}
+```
