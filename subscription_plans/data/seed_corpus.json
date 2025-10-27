@@ -1,0 +1,70 @@
+[
+  {
+    "id": "us-basic",
+    "title": "US Basic Plan",
+    "region": "United States",
+    "tier": "Basic",
+    "devices": 1,
+    "price": {"monthly": 8.99, "currency": "USD"},
+    "video_quality": "SD",
+    "add_ons": [
+      {"name": "Offline Downloads", "price_delta": 2.0}
+    ],
+    "notes": "Entry plan designed for single device viewing and limited resolution."
+  },
+  {
+    "id": "us-standard",
+    "title": "US Standard Plan",
+    "region": "United States",
+    "tier": "Standard",
+    "devices": 2,
+    "price": {"monthly": 13.99, "currency": "USD"},
+    "video_quality": "HD",
+    "add_ons": [
+      {"name": "Extra Profile Pack", "price_delta": 1.5},
+      {"name": "Premium Sports", "price_delta": 4.0}
+    ],
+    "notes": "Balanced plan for couples and small households with HD streaming."
+  },
+  {
+    "id": "latam-mobile",
+    "title": "LATAM Mobile Plan",
+    "region": "Latin America",
+    "tier": "Mobile",
+    "devices": 1,
+    "price": {"monthly": 4.99, "currency": "USD"},
+    "video_quality": "SD",
+    "add_ons": [
+      {"name": "Extra Mobile Data", "price_delta": 1.0}
+    ],
+    "notes": "Mobile only plan for on-the-go streaming with lower price point."
+  },
+  {
+    "id": "eu-premium",
+    "title": "EU Premium Plan",
+    "region": "European Union",
+    "tier": "Premium",
+    "devices": 4,
+    "price": {"monthly": 17.99, "currency": "EUR"},
+    "video_quality": "UHD",
+    "add_ons": [
+      {"name": "Family Kids Pack", "price_delta": 2.5},
+      {"name": "Cloud DVR", "price_delta": 3.0}
+    ],
+    "notes": "High-end plan with UHD content and multiple simultaneous streams."
+  },
+  {
+    "id": "apac-family",
+    "title": "APAC Family Plan",
+    "region": "Asia Pacific",
+    "tier": "Family",
+    "devices": 4,
+    "price": {"monthly": 11.49, "currency": "USD"},
+    "video_quality": "HD",
+    "add_ons": [
+      {"name": "Kids Pack", "price_delta": 1.0},
+      {"name": "Premier Sports", "price_delta": 3.5}
+    ],
+    "notes": "Family focused plan with four device support and curated kids content."
+  }
+]
