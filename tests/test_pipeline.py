@@ -94,3 +94,31 @@ plans:
     assert {variant.label for variant in variants} == {"A", "B"}
     assert variants[0].result.document.plans
     assert "Variant" in variants[0].justification
+
+
+@pytest.mark.asyncio
+async def test_pipeline_strips_markdown_code_fence():
+    scripted = [
+        """```yaml
+version: "1.0"
+plans:
+  - id: "fenced"
+    name: "Fenced Plan"
+    region: "US"
+    tier: "Basic"
+    price:
+      monthly: 9.0
+      currency: "USD"
+    device_limit: 1
+    video_quality: "HD"
+    add_ons: []
+```"""
+    ]
+    pipeline = PlanGenerationPipeline(
+        MockLLMClient(scripted),
+        config=PlanGenerationConfig(max_retries=1),
+    )
+
+    result = await pipeline.generate_document("Wrap the YAML in a fence.")
+
+    assert result.document.plans[0].id == "fenced"

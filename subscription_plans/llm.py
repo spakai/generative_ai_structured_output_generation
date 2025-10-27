@@ -42,7 +42,8 @@ class GitHubModelsLLMClient(BaseLLMClient):
         model: str = "gpt-4o-mini",
         temperature: float = 0.0,
         token: Optional[str] = None,
-        base_url: str = "https://api.githubcopilot.com",
+        base_url: Optional[str] = None,
+        endpoint: Optional[str] = None,
         timeout: float = 30.0,
     ):
         self.model = model
@@ -50,7 +51,11 @@ class GitHubModelsLLMClient(BaseLLMClient):
         self.token = token or os.getenv("GITHUB_TOKEN") or os.getenv("GH_TOKEN")
         if not self.token:
             raise ValueError("GitHub token required for GitHubModelsLLMClient.")
-        self.base_url = base_url.rstrip("/")
+        env_base = os.getenv("GITHUB_MODELS_BASE_URL")
+        resolved = base_url or env_base or "https://api.githubcopilot.com"
+        self.base_url = resolved.rstrip("/")
+        env_endpoint = os.getenv("GITHUB_MODELS_ENDPOINT")
+        self.endpoint = (endpoint or env_endpoint or "").strip() or None
         self.timeout = timeout
 
     async def generate(self, prompt: str, **kwargs: Any) -> str:
@@ -59,6 +64,7 @@ class GitHubModelsLLMClient(BaseLLMClient):
             "Accept": "application/json",
             "Content-Type": "application/json",
             "X-GitHub-Api-Version": "2023-12-01",
+            "User-Agent": "subscription-plans/0.1.0",
         }
         payload: Dict[str, Any] = {
             "model": self.model,
@@ -68,9 +74,22 @@ class GitHubModelsLLMClient(BaseLLMClient):
             ],
             "temperature": kwargs.get("temperature", self.temperature),
         }
-        async with httpx.AsyncClient(base_url=self.base_url, timeout=self.timeout) as client:
-            response = await client.post("/v1/chat/completions", headers=headers, json=payload)
-        response.raise_for_status()
+        target_url = self.endpoint or f"{self.base_url}/v1/chat/completions"
+        try:
+            async with httpx.AsyncClient(timeout=self.timeout) as client:
+                response = await client.post(target_url, headers=headers, json=payload)
+            response.raise_for_status()
+        except httpx.HTTPStatusError as exc:
+            status = exc.response.status_code
+            if status in {401, 403, 404}:
+                raise RuntimeError(
+                    "GitHub Models API returned "
+                    f"{status}. Check that your token has GitHub Models access "
+                    "and that the base URL is correct (set GITHUB_MODELS_BASE_URL if needed)."
+                ) from exc
+            raise
+        except httpx.HTTPError as exc:
+            raise RuntimeError(f"Failed to call GitHub Models API: {exc}") from exc
         data = response.json()
         try:
             return data["choices"][0]["message"]["content"]

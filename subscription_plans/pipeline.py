@@ -63,7 +63,10 @@ class PlanGenerationPipeline:
                 prior_yaml=prior_yaml,
                 validation_errors=validation_errors,
             )
-            yaml_output = await self.llm.generate(prompt)
+            try:
+                yaml_output = await self.llm.generate(prompt)
+            except Exception as exc:  # pragma: no cover - network errors covered via raise
+                raise PlanGenerationError(f"LLM request failed: {exc}") from exc
             prior_yaml = yaml_output
             payload, parse_error = self._parse_yaml(yaml_output)
             if parse_error:
@@ -181,10 +184,33 @@ class PlanGenerationPipeline:
 
     @staticmethod
     def _parse_yaml(raw_yaml: str) -> tuple[dict, Optional[str]]:
+        normalized = PlanGenerationPipeline._strip_code_fence(raw_yaml)
         try:
-            data = yaml.safe_load(raw_yaml)
+            data = yaml.safe_load(normalized)
         except yaml.YAMLError as exc:
             return {}, f"YAML parse error: {exc}"
         if not isinstance(data, dict):
             return {}, "Model output must be a YAML mapping/object."
         return data, None
+
+    @staticmethod
+    def _strip_code_fence(raw_yaml: str) -> str:
+        stripped = raw_yaml.strip()
+        if not stripped.startswith("```"):
+            return raw_yaml
+        lines = stripped.splitlines()
+        fence = lines[0]
+        if not fence.startswith("```"):
+            return raw_yaml
+
+        closing_index = None
+        for idx in range(len(lines) - 1, 0, -1):
+            if lines[idx].startswith("```"):
+                closing_index = idx
+                break
+
+        if closing_index is None:
+            body = lines[1:]
+        else:
+            body = lines[1:closing_index]
+        return "\n".join(body).strip()

@@ -1,3 +1,21 @@
+Metadata-Version: 2.4
+Name: subscription-plans
+Version: 0.1.0
+Summary: Streaming subscription plan generator with validation and FastAPI service.
+Author: Streaming Plans Bot
+License: MIT
+Requires-Python: >=3.10
+Description-Content-Type: text/markdown
+Requires-Dist: fastapi>=0.110.0
+Requires-Dist: uvicorn>=0.27.0
+Requires-Dist: pydantic>=2.6.0
+Requires-Dist: pyyaml>=6.0.1
+Requires-Dist: jsonschema>=4.21.0
+Requires-Dist: httpx>=0.27.0
+Provides-Extra: dev
+Requires-Dist: pytest>=7.4.0; extra == "dev"
+Requires-Dist: pytest-asyncio>=0.23.0; extra == "dev"
+
 # Subscription Plan Generator
 
 Streaming subscription plan generator that orchestrates retrieval-augmented prompting, JSON schema validation, automatic repair, and a FastAPI service layer. Designed for OTT/telco style pricing workflows.
@@ -37,8 +55,6 @@ Streaming subscription plan generator that orchestrates retrieval-augmented prom
 
    The API first tries GitHub Models (`GITHUB_TOKEN` or `GH_TOKEN`); if unavailable it falls back to a static mock response (useful for offline/local development).
 
-   > If you receive a 401/403/404 error when calling the API, ensure your token was created from the [GitHub Models beta](https://github.com/settings/tokens?type=beta) and includes access to the models endpoint. You can override the host with `GITHUB_MODELS_BASE_URL`, or supply a full path via `GITHUB_MODELS_ENDPOINT` (e.g., `https://models.github.ai/inference/chat/completions`) when targeting enterprise proxies.
-
 4. Run the API service:
 
    ```bash
@@ -65,6 +81,5 @@ pytest
 ## Configuration Notes
 - The pipeline configuration lives in `PlanGenerationConfig`. Adjust retries, example counts, or disable A/B generation as required.
 - LLM client selection is automatic: GitHub Models (`gpt-4o-mini`) → static mock. Override by supplying a custom `BaseLLMClient`.
-- Set `GITHUB_MODELS_BASE_URL` (host) or `GITHUB_MODELS_ENDPOINT` (full URL) to point at a custom GitHub Models endpoint if your organization proxies requests.
 - To integrate with GitHub Actions, see `.github/workflows/ci.yml`.
 - For custom LLM providers, implement `BaseLLMClient.generate` and pass it into `create_app`.
