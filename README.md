@@ -68,3 +68,9 @@ pytest
 - Set `GITHUB_MODELS_BASE_URL` (host) or `GITHUB_MODELS_ENDPOINT` (full URL) to point at a custom GitHub Models endpoint if your organization proxies requests.
 - To integrate with GitHub Actions, see `.github/workflows/ci.yml`.
 - For custom LLM providers, implement `BaseLLMClient.generate` and pass it into `create_app`.
+
+## How the Plans Are Generated
+- We ship a small seed corpus (`subscription_plans/data/seed_corpus.json`) containing representative OTT/telco plans. Each entry provides tier names, pricing, device limits, add-ons, and notes.
+- When you call `/generate`, the retriever selects the most relevant examples and injects them into the LLM prompt alongside your user brief. The prompt also includes the YAML schema summary so the model stays on structure.
+- The LLM drafts YAML by analogizing from those grounded examples. Validation ensures the output matches the schema and business rules; failures trigger an automatic repair prompt with error feedback.
+- Because we ground the model every time, the generated plans stay aligned with the corpus style—sensible tiers, realistic prices, compliant device limits—without needing to fine-tune the model itself.
